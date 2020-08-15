@@ -3,23 +3,22 @@
 # Program:    	ENIGMA 
 # Description:  Simulation of enigma machine (German encryption device)
 # Auteur:       Laurent FERHI
-# Version:      0.15
+# Version:      0.16
 #
 # ----------------------------------------------------------------------------+
 
 # --- DEPEDENCIES ------------------------------------------------------------+
 
 import random as rand
-from itertools import permutations
 
 # --- FUNCTIONS --------------------------------------------------------------+
 
-def fab_rotor(lex):
+def create_rotor(lex):
     rotor = [i for i in lex]
     rand.shuffle(rotor)
     return rotor
 
-def fab_reflector(lex):
+def create_reflector(lex):
     if len(lex)%2 != 0:
         print("The lexicon should contain even number of elements")
     lst_ind = [i for i in range(len(lex))]
@@ -71,26 +70,26 @@ def rotors_order_setup(cle_rotors, r1, r2, r3):
     return lst_rotors
 
 def cypher(lexicon, plugboard, ls_rot, reflector, cara):
-    c_1 = plugboard[lexicon.index(cara)]
-    c_2 = (ls_rot[0])[lexicon.index(c_1)]
-    c_3 = (ls_rot[1])[lexicon.index(c_2)]
-    c_4 = (ls_rot[2])[lexicon.index(c_3)]
-    c_5 = reflector[lexicon.index(c_4)]
-    c_6 = lexicon[(ls_rot[2]).index(c_5)]
-    c_7 = lexicon[(ls_rot[1]).index(c_6)]
-    c_8 = lexicon[(ls_rot[0]).index(c_7)]
-    c_9 = lexicon[plugboard.index(c_8)]
-    return c_9
+    step_1 = plugboard[lexicon.index(cara)]
+    step_2 = (ls_rot[0])[lexicon.index(step_1)]
+    step_3 = (ls_rot[1])[lexicon.index(step_2)]
+    step_4 = (ls_rot[2])[lexicon.index(step_3)]
+    step_5 = reflector[lexicon.index(step_4)]
+    step_6 = lexicon[(ls_rot[2]).index(step_5)]
+    step_7 = lexicon[(ls_rot[1]).index(step_6)]
+    step_8 = lexicon[(ls_rot[0]).index(step_7)]
+    step_9 = lexicon[plugboard.index(step_8)]
+    return step_9
 
 def enigma(txt, lexicon, machine, settings):
     # Plugboard setup
-    plugboard = plugboard_setup(lexicon, settings.get("cablage_plugboard"))
+    plugboard = plugboard_setup(lexicon, settings.get("plugboard_settings"))
     # Initial setup of rotors
-    r1 = tunning(machine.get("rotor_1"), settings.get("indice_r1"))
-    r2 = tunning(machine.get("rotor_2"), settings.get("indice_r2"))
-    r3 = tunning(machine.get("rotor_3"), settings.get("indice_r3"))
+    r1 = tunning(machine.get("rotor_1"), settings.get("index_r1"))
+    r2 = tunning(machine.get("rotor_2"), settings.get("index_r2"))
+    r3 = tunning(machine.get("rotor_3"), settings.get("index_r3"))
     # Rotors order
-    lst_rotors = rotors_order_setup(settings.get("ordre_rotors"), r1, r2, r3)
+    lst_rotors = rotors_order_setup(settings.get("rotors_order"), r1, r2, r3)
     # Reflector import
     reflector = machine.get("reflector")
     # Removing spaces in text
@@ -106,7 +105,7 @@ def enigma(txt, lexicon, machine, settings):
         r1 = rotation(r1,1)
         r2 = rotation(r2,2)
         r3 = rotation(r3,3)
-        lst_rotors = rotors_order_setup(settings.get("ordre_rotors"), r1, r2, r3)
+        lst_rotors = rotors_order_setup(settings.get("rotors_order"), r1, r2, r3)
         i += 1
         # Space every 4 characters
         if (i-1)%4 == 0:
@@ -115,54 +114,52 @@ def enigma(txt, lexicon, machine, settings):
 
 # --- MAIN -------------------------------------------------------------------+
 
-lexicon = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+if __name__ == "__main__":
 
-# Machine build
-"""
-rotor_1 = fab_rotor(lexicon)
-rotor_2 = fab_rotor(lexicon)
-rotor_3 = fab_rotor(lexicon)
+    lexicon = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-reflector = fab_reflector(lexicon)
+    # Machine build
+    """
+    rotor_1 = create_rotor(lexicon)
+    rotor_2 = create_rotor(lexicon)
+    rotor_3 = create_rotor(lexicon)
 
-print(rotor_1)
-print(rotor_2)
-print(rotor_3)
-print(reflector)
-"""
+    reflector = create_reflector(lexicon)
 
-r1 = ['I', 'V', 'R', 'M', 'Z', 'X', 'F', 'H', 'B', 'U', 'Q', 'A', 'T', 
-      'N', 'C', 'G', 'O', 'E', 'P', 'Y', 'D', 'L', 'S', 'J', 'K', 'W']
-r2 = ['N', 'A', 'R', 'I', 'S', 'Z', 'C', 'K', 'X', 'H', 'L', 'T', 'G', 
-      'Y', 'D', 'U', 'Q', 'W', 'O', 'P', 'E', 'M', 'F', 'V', 'J', 'B']
-r3 = ['W', 'T', 'X', 'G', 'M', 'P', 'N', 'A', 'D', 'L', 'B', 'Q', 'O', 
-      'Z', 'F', 'R', 'U', 'E', 'I', 'V', 'S', 'K', 'J', 'C', 'H', 'Y']
+    print(rotor_1)
+    print(rotor_2)
+    print(rotor_3)
+    print(reflector)
+    """
 
-ref = ['Y', 'R', 'U', 'H', 'Q', 'S', 'L', 'D', 'P', 'X', 'N', 'G', 'O', 
-       'K', 'M', 'I', 'E', 'B', 'F', 'Z', 'C', 'W', 'V', 'J', 'A', 'T']
+    r1 = ['I', 'V', 'R', 'M', 'Z', 'X', 'F', 'H', 'B', 'U', 'Q', 'A', 'T', 
+          'N', 'C', 'G', 'O', 'E', 'P', 'Y', 'D', 'L', 'S', 'J', 'K', 'W']
+    r2 = ['N', 'A', 'R', 'I', 'S', 'Z', 'C', 'K', 'X', 'H', 'L', 'T', 'G', 
+          'Y', 'D', 'U', 'Q', 'W', 'O', 'P', 'E', 'M', 'F', 'V', 'J', 'B']
+    r3 = ['W', 'T', 'X', 'G', 'M', 'P', 'N', 'A', 'D', 'L', 'B', 'Q', 'O', 
+          'Z', 'F', 'R', 'U', 'E', 'I', 'V', 'S', 'K', 'J', 'C', 'H', 'Y']
 
-machine = {"rotor_1" : r1, "rotor_2" : r2, "rotor_3" : r3, "reflector" : ref}
+    ref = ['Y', 'R', 'U', 'H', 'Q', 'S', 'L', 'D', 'P', 'X', 'N', 'G', 'O', 
+           'K', 'M', 'I', 'E', 'B', 'F', 'Z', 'C', 'W', 'V', 'J', 'A', 'T']
 
-# Inputs machine setup
-i_r1 = 22
-i_r2 = 8
-i_r3 = 17
+    machine = {"rotor_1" : r1, "rotor_2" : r2, "rotor_3" : r3, "reflector" : ref}
 
-ordre = 213
+    # Inputs machine setup
+    i_r1 = 4
+    i_r2 = 8
+    i_r3 = 17
 
-cab_pl = [["A","D"],["V","K"],["E","L"]]
+    order = 213
 
-settings = {"indice_r1" : i_r1, "indice_r2" : i_r2, "indice_r3" : i_r3,
-            "ordre_rotors" : ordre, "cablage_plugboard" : cab_pl}
+    plb_setup = [["A","S"],["V","K"],["E","L"]]
 
-# Main program
+    settings = {"index_r1" : i_r1, "index_r2" : i_r2, "index_r3" : i_r3,
+                "rotors_order" : order, "plugboard_settings" : plb_setup}
 
-texte = "HERE IS A CHECK MESSAGE TO ENCRYPT"
+    text = "HERE IS A CHECK MESSAGE TO ENCRYPT"
 
-cryptage = enigma(texte, lexicon, machine, settings)
-print(cryptage)
+    encrypted_text = enigma(text, lexicon, machine, settings)
+    print(encrypted_text)
 
-decryptage = enigma(cryptage, lexicon, machine, settings)
-print(decryptage)
-
-###############################################################################
+    decrypted_text = enigma(encrypted_text, lexicon, machine, settings)
+    print(decrypted_text)
