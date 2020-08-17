@@ -2,7 +2,7 @@
 #
 # Program:    	ENIGMA 
 # Description:  Simulation of enigma machine (German encryption device)
-# Auteur:       Laurent FERHI
+# Author:       Laurent FERHI
 # Version:      0.16
 #
 # ----------------------------------------------------------------------------+
