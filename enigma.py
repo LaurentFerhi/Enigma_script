@@ -107,8 +107,8 @@ def enigma(txt, lexicon, machine, settings):
         r3 = rotation(r3,3)
         lst_rotors = rotors_order_setup(settings.get("rotors_order"), r1, r2, r3)
         i += 1
-        # Space every 4 characters
-        if (i-1)%4 == 0:
+        # Space every 5 characters
+        if (i-1)%5 == 0:
             texte_crypt.append(" ")
     return "".join(texte_crypt)
 
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     settings = {"index_r1" : i_r1, "index_r2" : i_r2, "index_r3" : i_r3,
                 "rotors_order" : order, "plugboard_settings" : plb_setup}
 
-    text = "HERE IS A CHECK MESSAGE TO ENCRYPT"
+    text = "ALLIED CONVOY SPOTTED NEAR AW SECTOR ATTACK AT ONCE"
 
     encrypted_text = enigma(text, lexicon, machine, settings)
     print(encrypted_text)
