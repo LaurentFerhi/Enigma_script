@@ -1,37 +1,44 @@
 # ----------------------------------------------------------------------------+
-#
 # Program:    	ENIGMA 
-# Description:  Simulation of enigma machine (German encryption device)
+# Description:  Simulation of enigma machine (WWII German encryption device)
 # Author:       Laurent FERHI
-# Version:      0.16
-#
+# Version:      1.0
 # ----------------------------------------------------------------------------+
-
-# --- DEPEDENCIES ------------------------------------------------------------+
 
 import random as rand
 
-# --- FUNCTIONS --------------------------------------------------------------+
-
 def create_rotor(lex):
+    """
+    Rotor contains all characters from lexicon in random order
+    """
     rotor = [i for i in lex]
     rand.shuffle(rotor)
     return rotor
 
 def create_reflector(lex):
+    """
+    Reflector contains must be symmetrical (if A->W, then W->A)
+    """
     if len(lex)%2 != 0:
         print("The lexicon should contain even number of elements")
-    lst_ind = [i for i in range(len(lex))]
+    lst_ind = [i for i in range(len(lex))] # list of indexes of the lexicon
+
+    # Pair a letter to another and remember the associated indexes
     new_enum = []
     while len(lst_ind) != 0:
+        
         ind_1 = rand.choice(lst_ind)
         lst_ind.remove(ind_1)
         car_1 = [enum[1] for enum in enumerate(lex) if enum[0] == ind_1]
+
         ind_2 = rand.choice(lst_ind)
         lst_ind.remove(ind_2)
         car_2 = [enum[1] for enum in enumerate(lex) if enum[0] == ind_2]
+
         new_enum.append((ind_2, car_1[0]))
         new_enum.append((ind_1, car_2[0]))
+
+    # Populate the reflector with letters on their imposed indexes
     reflect = []    
     for i in range(len(new_enum)):
         for enum in new_enum:
@@ -40,12 +47,21 @@ def create_reflector(lex):
     return reflect
 
 def tunning(rotor, ind):
+    """
+    Initial position of the rotor
+    """
     return rotor[ind:]+rotor[0:ind]
 
 def rotation(rotor ,i):
+    """
+    Rotations of i positions
+    """
     return rotor[-i:]+rotor[:len(rotor)-i]
 
 def letter_perm(lex, couple):
+    """
+    Letters permutations of the plugboard
+    """
     plug = []
     for cara in lex:
         if cara == couple[0]: 
@@ -57,11 +73,17 @@ def letter_perm(lex, couple):
     return plug
 
 def plugboard_setup(lex, lst_echange):
+    """
+    Plugboard initial setup
+    """
     for element in lst_echange:
         lex = letter_perm(lex, element)
     return lex
 
 def rotors_order_setup(cle_rotors, r1, r2, r3):
+    """
+    Rotors initial order
+    """
     lst_rotors = []
     for numero in list(str(cle_rotors)):
         for enum in enumerate([r1, r2, r3]):
@@ -69,7 +91,10 @@ def rotors_order_setup(cle_rotors, r1, r2, r3):
                 lst_rotors.append(enum[1])
     return lst_rotors
 
-def cypher(lexicon, plugboard, ls_rot, reflector, cara):
+def encrypt(lexicon, plugboard, ls_rot, reflector, cara):
+    """
+    Go through plugboard, rotors, reflector and back again
+    """
     step_1 = plugboard[lexicon.index(cara)]
     step_2 = (ls_rot[0])[lexicon.index(step_1)]
     step_3 = (ls_rot[1])[lexicon.index(step_2)]
@@ -82,6 +107,9 @@ def cypher(lexicon, plugboard, ls_rot, reflector, cara):
     return step_9
 
 def enigma(txt, lexicon, machine, settings):
+    """
+    Process a text to the enigma machine
+    """
     # Plugboard setup
     plugboard = plugboard_setup(lexicon, settings.get("plugboard_settings"))
     # Initial setup of rotors
@@ -100,8 +128,9 @@ def enigma(txt, lexicon, machine, settings):
     texte_crypt = []
     i = 1
     for lettre in ls_txt:
-        crypt_lettre = cypher(lexicon, plugboard, lst_rotors, reflector, lettre)
+        crypt_lettre = encrypt(lexicon, plugboard, lst_rotors, reflector, lettre)
         texte_crypt.append(crypt_lettre)
+        # Rotations of the rotor
         r1 = rotation(r1,1)
         r2 = rotation(r2,2)
         r3 = rotation(r3,3)
@@ -118,7 +147,7 @@ if __name__ == "__main__":
 
     lexicon = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-    # Machine build
+    ### Machine build
     """
     rotor_1 = create_rotor(lexicon)
     rotor_2 = create_rotor(lexicon)
@@ -144,7 +173,7 @@ if __name__ == "__main__":
 
     machine = {"rotor_1" : r1, "rotor_2" : r2, "rotor_3" : r3, "reflector" : ref}
 
-    # Inputs machine setup
+    ### Inputs machine setup
     i_r1 = 4
     i_r2 = 8
     i_r3 = 17
@@ -156,7 +185,8 @@ if __name__ == "__main__":
     settings = {"index_r1" : i_r1, "index_r2" : i_r2, "index_r3" : i_r3,
                 "rotors_order" : order, "plugboard_settings" : plb_setup}
 
-    text = "ALLIED CONVOY SPOTTED NEAR AW SECTOR ATTACK AT ONCE"
+    ### Text encryption
+    text = "CONVOY HAS BEEN SPOTTED IN LA ROCHELLE SECTOR ATTACK AT ONCE"
 
     encrypted_text = enigma(text, lexicon, machine, settings)
     print(encrypted_text)
