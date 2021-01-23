@@ -2,7 +2,7 @@
 # Program:    	ENIGMA 
 # Description:  Simulation of enigma machine (WWII German encryption device)
 # Author:       Laurent FERHI
-# Version:      1.0
+# Version:      1.1
 # ----------------------------------------------------------------------------+
 
 import random as rand
@@ -126,26 +126,37 @@ def enigma(txt, lexicon, machine, settings):
         del ls_txt[ls_txt.index(" ")]
     # Text Encryption
     texte_crypt = []
-    i = 1
+    i = 1 # counter for characters spaces
+    c_r1,c_r2= 1,1 # counters for rotor rotation
     for lettre in ls_txt:
         crypt_lettre = encrypt(lexicon, plugboard, lst_rotors, reflector, lettre)
         texte_crypt.append(crypt_lettre)
         # Rotations of the rotor
         r1 = rotation(r1,1)
-        r2 = rotation(r2,2)
-        r3 = rotation(r3,3)
+        c_r1 += 1
+        # Case r1 did a full rotation
+        if c_r1%(len(lexicon)) == 0:
+            c_r1 = 1
+            r2 = rotation(r2,1)
+            c_r2 += 1
+        # Case r2 did a full rotation
+        if c_r2%(len(lexicon)) == 0:
+            c_r2 = 1
+            r3 = rotation(r3,1)
         lst_rotors = rotors_order_setup(settings.get("rotors_order"), r1, r2, r3)
         i += 1
-        # Space every 5 characters
+        '''
+        # Space every 5 characters (uncomment to activet this feature)
         if (i-1)%5 == 0:
             texte_crypt.append(" ")
+        '''
     return "".join(texte_crypt)
 
 # --- MAIN -------------------------------------------------------------------+
 
 if __name__ == "__main__":
 
-    lexicon = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    lexicon = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ_.")
 
     ### Machine build
     """
@@ -160,21 +171,15 @@ if __name__ == "__main__":
     print(rotor_3)
     print(reflector)
     """
-
-    r1 = ['I', 'V', 'R', 'M', 'Z', 'X', 'F', 'H', 'B', 'U', 'Q', 'A', 'T', 
-          'N', 'C', 'G', 'O', 'E', 'P', 'Y', 'D', 'L', 'S', 'J', 'K', 'W']
-    r2 = ['N', 'A', 'R', 'I', 'S', 'Z', 'C', 'K', 'X', 'H', 'L', 'T', 'G', 
-          'Y', 'D', 'U', 'Q', 'W', 'O', 'P', 'E', 'M', 'F', 'V', 'J', 'B']
-    r3 = ['W', 'T', 'X', 'G', 'M', 'P', 'N', 'A', 'D', 'L', 'B', 'Q', 'O', 
-          'Z', 'F', 'R', 'U', 'E', 'I', 'V', 'S', 'K', 'J', 'C', 'H', 'Y']
-
-    ref = ['Y', 'R', 'U', 'H', 'Q', 'S', 'L', 'D', 'P', 'X', 'N', 'G', 'O', 
-           'K', 'M', 'I', 'E', 'B', 'F', 'Z', 'C', 'W', 'V', 'J', 'A', 'T']
+    r1 = list('USKFEVIYWZTXAGCQNBMODHLR_PJ.')
+    r2 = list('XHVNDCRZQPSB_OKT.LUWGJMEFAIY')
+    r3 = list('AWYJLFOV_TIQMZERXUSDKBPNGC.H')
+    ref = list('.XF_JCYIHELKNMPOZTWRVUSBGQDA')
 
     machine = {"rotor_1" : r1, "rotor_2" : r2, "rotor_3" : r3, "reflector" : ref}
 
     ### Inputs machine setup
-    i_r1 = 4
+    i_r1 = 0
     i_r2 = 8
     i_r3 = 17
 
@@ -186,7 +191,7 @@ if __name__ == "__main__":
                 "rotors_order" : order, "plugboard_settings" : plb_setup}
 
     ### Text encryption
-    text = "CONVOY HAS BEEN SPOTTED IN LA ROCHELLE SECTOR ATTACK AT ONCE"
+    text = "CONVOY_HAS_BEEN_SPOTTED_IN_LA_ROCHELLE_SECTOR._ATTACK_AT_ONCE."
 
     encrypted_text = enigma(text, lexicon, machine, settings)
     print(encrypted_text)
